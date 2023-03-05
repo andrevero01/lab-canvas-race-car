@@ -40,6 +40,7 @@ window.onload = () => {
 
   //Global variables
   const obstacles = [];
+  const obstaclesToRemove = [];
   let intervalID;
   let counter = 0;
   let scoreCount = 0;
@@ -48,7 +49,7 @@ window.onload = () => {
   function startGame() {
     draw();
     document.addEventListener("keydown", moveCar);
-    intervalID = setInterval(update, 1000 / 20);
+    intervalID = setInterval(update, 1000 / 25);
   }
 
   function draw() {
@@ -58,7 +59,7 @@ window.onload = () => {
 
   function update() {
     draw();
-    if (counter % 20 === 0) {
+    if (counter % 30 === 0) {
       obstacles.push(new obstacle(ctx, canvas));
     }
     obstacles.forEach((obstacle) => {
@@ -78,10 +79,18 @@ window.onload = () => {
       ) {
         gameOver();
       } else if (obstacle.y > canvas.height) {
-        obstacles.splice(obstacle.index, 1);
+        obstaclesToRemove.push(obstacle);
         scoreCount++;
+      } else if (scoreCount > 10) {
+        obstacle.y += 11;
       }
-      counter++;
+    });
+    counter++;
+    obstaclesToRemove.forEach((obstacle) => {
+      const index = obstacles.indexOf(obstacle);
+      if (index !== -1) {
+        obstacles.splice(index, 1);
+      }
     });
     drawScore();
   }
@@ -116,7 +125,7 @@ window.onload = () => {
   function drawScore() {
     ctx.font = "30px Arial";
     ctx.fillStyle = "white";
-    ctx.fillText("Score: " + scoreCount, 70, 40);
+    ctx.fillText("Score: " + scoreCount, 80, 40);
   }
 
   function gameOver() {
